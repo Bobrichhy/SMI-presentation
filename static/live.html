@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Output</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link id="fonts-css" rel="stylesheet" href="/api/fonts.css">
+</head>
+<body class="live-body">
+  <div id="bg-image" class="bg-image hidden"></div>
+  <div id="timer" class="timer hidden"><span id="timer-time">--:--</span><span id="timer-label"></span></div>
+  <video id="bg-video" class="bg-video hidden" muted loop playsinline></video>
+  <div id="stage" class="stage">
+    <img id="slide-image" class="slide-image hidden" alt="">
+    <video id="slide-video" class="slide-video hidden" playsinline></video>
+    <div id="slide-ref" class="slide-ref"></div>
+    <div id="slide-text" class="slide-text"></div>
+    <div id="slide-text2" class="slide-text2"></div>
+  </div>
+  <div id="design" class="design hidden"><div id="design-canvas" class="design-canvas"></div></div>
+  <div id="overlay" class="overlay pos-bottom">
+    <div class="ov-inner"><div id="ov-title" class="ov-title"></div><div id="ov-sub" class="ov-sub"></div></div>
+  </div>
+  <audio id="bg-audio"></audio>
+  <div id="watermark" class="watermark hidden"><img id="wm-logo" class="wm-logo hidden" alt=""><span id="wm-text"></span></div>
+  <button id="enable-media" class="enable-media hidden">🔊 Click to enable sound</button>
+  <div id="status" class="live-status">connecting…</div>
+  <script src="/static/js/design-render.js"></script>
+  <script src="/static/js/live.js"></script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operator — SMI Presentation</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link id="fonts-css" rel="stylesheet" href="/api/fonts.css">
+</head>
+<body class="operator-body">
+  <div class="bg-glow"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">◆</span>
+      <span class="brand-name">SMI<span class="brand-sub">Presentation</span></span>
+    </div>
+    <div class="topbar-right">
+      <span class="status-pill"><span id="ws-dot" class="dot"></span><span id="ws-label">connecting…</span></span>
+      <button id="ql-btn" class="btn ghost" title="Quick-launch (Ctrl/⌘+K)">⚡ Quick</button>
+      <button id="pin-btn" class="btn ghost" title="Operator PIN (lock LAN control)">🔒 PIN</button>
+      <button id="timer-btn" class="btn ghost">⏱ Timer</button>
+      <button id="ui-theme-btn" class="btn ghost">🌈 Theme</button>
+      <button id="appearance-btn" class="btn ghost">🎨 Appearance</button>
+      <a class="btn ghost" href="/stage" target="_blank" rel="noopener">Stage ↗</a>
+      <a class="btn ghost" href="/live" target="_blank" rel="noopener">Live Output ↗</a>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ============ SOURCES (Songs / Bible) ============ -->
+    <section class="panel">
+      <div class="tabs">
+        <button class="tab active" data-tab="songs">Songs</button>
+        <button class="tab" data-tab="bible">Scripture</button>
+        <button class="tab" data-tab="media">Media</button>
+        <button class="tab" data-tab="presentation">Design</button>
+      </div>
+
+      <!-- Songs tab -->
+      <div id="tab-songs" class="tab-panel active">
+        <input id="song-filter" class="field" type="text" placeholder="Filter by title or lyrics…">
+        <ul id="song-list" class="list"></ul>
+        <details class="creator">
+          <summary>+ New song</summary>
+          <input id="new-title" type="text" class="field" placeholder="Song title">
+          <textarea id="new-slides" class="field mono" rows="7"
+            placeholder="One slide per blank-line block.&#10;Tag a block with [chorus] or [bridge].&#10;&#10;Verse line one&#10;Verse line two&#10;&#10;[chorus]&#10;Chorus line"></textarea>
+          <button id="save-song" class="btn primary full">Save song</button>
+        </details>
+        <button id="import-song" class="btn full" style="margin-top:8px">⬇ Import song (paste / file)</button>
+        <button id="ccli-report" class="btn full" style="margin-top:8px">📊 CCLI usage report</button>
+      </div>
+
+      <!-- Bible tab -->
+      <div id="tab-bible" class="tab-panel">
+        <div class="row gap two">
+          <div class="grow">
+            <label class="mini-label">Version</label>
+            <select id="bible-version" class="field"></select>
+          </div>
+          <div>
+            <label class="mini-label">Verses / slide</label>
+            <select id="verses-per-slide" class="field">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="all">Whole passage</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="subtabs">
+          <button class="subtab active" data-sub="find">Find</button>
+          <button class="subtab" data-sub="browse">Browse</button>
+          <button class="subtab" data-sub="quick">Quick</button>
+        </div>
+
+        <!-- Find: reference / word search -->
+        <div id="sub-find" class="sub-panel active">
+          <input id="bible-ref" class="field" type="text" placeholder="John 3:16-18  ·  Psalm 23  ·  love">
+          <div class="row gap">
+            <button id="bible-lookup" class="btn primary grow">Look up</button>
+            <button id="bible-search" class="btn grow">Search words</button>
+          </div>
+        </div>
+
+        <!-- Browse: book -> chapter -> verse -->
+        <div id="sub-browse" class="sub-panel">
+          <select id="browse-book" class="field"><option value="">Choose a book…</option></select>
+          <div id="browse-chapters" class="grid-pick"></div>
+          <div id="browse-verses" class="grid-pick"></div>
+        </div>
+
+        <!-- Quick: presets + recents -->
+        <div id="sub-quick" class="sub-panel">
+          <label class="mini-label">Common passages</label>
+          <div id="quick-presets" class="chip-row"></div>
+          <label class="mini-label">Recent</label>
+          <div id="quick-recents" class="chip-row"><span class="hint">No recent lookups yet.</span></div>
+        </div>
+
+        <p id="bible-note" class="hint"></p>
+        <div id="bible-result" class="bible-result"></div>
+      </div>
+
+      <!-- Media tab -->
+      <div id="tab-media" class="tab-panel">
+        <label class="btn primary full upload-btn">
+          ⬆ Upload photo · music · video · PDF
+          <input id="media-file" type="file" accept="image/*,audio/*,video/*,.pdf" hidden>
+        </label>
+        <p id="media-status" class="hint">PDFs become a slide deck (one page per slide). Music plays as background audio. Videos project fullscreen (any format — converted automatically).</p>
+        <input id="media-filter" class="field" type="text" placeholder="Filter media…">
+        <ul id="media-list" class="list"></ul>
+
+        <details class="creator">
+          <summary>＋ Upload fonts</summary>
+          <label class="btn full upload-btn">⬆ Upload font (.ttf .otf .woff .woff2)
+            <input id="font-file" type="file" accept=".ttf,.otf,.woff,.woff2,font/*" hidden></label>
+          <p id="font-status" class="hint">Uploaded fonts appear in the Appearance font pickers.</p>
+          <ul id="font-list" class="list"></ul>
+        </details>
+      </div>
+
+      <!-- Presentation / Design tab -->
+      <div id="tab-presentation" class="tab-panel">
+        <button id="new-presentation" class="btn primary full">＋ New design</button>
+        <p class="hint">Free-canvas slides for announcements, notices, “Happy Birthday”, etc. Add text, images and shapes anywhere.</p>
+        <ul id="presentation-list" class="list"></ul>
+      </div>
+    </section>
+
+    <!-- ============ ORDER OF SERVICE ============ -->
+    <section class="panel">
+      <h2 class="panel-title">Order of Service</h2>
+      <div class="svc-bar">
+        <select id="service-select" class="field" title="Switch service"></select>
+        <button id="svc-new" class="btn small" title="New service">＋</button>
+        <button id="svc-rename" class="btn small" title="Rename">✎</button>
+        <button id="svc-dup" class="btn small" title="Duplicate">⧉</button>
+        <button id="svc-del" class="btn small danger" title="Delete service">✕</button>
+      </div>
+      <ul id="playlist" class="list"></ul>
+      <p id="playlist-empty" class="hint">Add songs, scripture, media or a design from the left. Drag items to reorder.</p>
+    </section>
+
+    <!-- ============ LIVE CONTROL ============ -->
+    <section class="panel control">
+      <div class="live-head">
+        <span class="live-badge">LIVE</span>
+        <h2 id="live-title" class="panel-title">Nothing live</h2>
+        <span id="slide-counter" class="counter">—</span>
+      </div>
+
+      <ul id="slide-list" class="slide-list"></ul>
+
+      <div class="controls">
+        <button id="prev" class="btn">◀ Prev</button>
+        <button id="next" class="btn primary">Next ▶</button>
+        <button id="black" class="btn warn">Black</button>
+        <button id="clear" class="btn warn">Clear</button>
+        <button id="show" class="btn">Show</button>
+        <button id="style-btn" class="btn">🎨 Style</button>
+      </div>
+
+      <div id="audio-bar" class="audio-bar hidden">
+        <span class="audio-ico">♪</span>
+        <span id="audio-title" class="audio-title">—</span>
+        <button id="audio-toggle" class="btn small">Pause</button>
+        <button id="audio-loop" class="btn small">Loop</button>
+        <button id="audio-stop" class="btn small danger">Stop</button>
+      </div>
+
+      <details class="overlay-ctl">
+        <summary>▭ Lower-third / notice</summary>
+        <input id="ov-title-in" class="field" type="text" placeholder="Title — e.g. Pastor John Doe">
+        <input id="ov-sub-in" class="field" type="text" placeholder="Subtitle — e.g. Guest Speaker">
+        <div class="row gap">
+          <select id="ov-pos" class="field" style="max-width:104px"><option value="bottom">Bottom</option><option value="top">Top</option></select>
+          <button id="ov-show" class="btn primary grow">Show</button>
+          <button id="ov-hide" class="btn grow">Hide</button>
+        </div>
+        <div id="ov-presets" class="chip-row"></div>
+      </details>
+
+      <div class="preview-wrap">
+        <span class="preview-tag">PREVIEW · what's on the projector</span>
+        <div id="preview" class="preview">
+          <div id="preview-ref" class="preview-ref"></div>
+          <div id="preview-text" class="preview-text"></div>
+          <div id="preview-text2" class="preview-text2"></div>
+          <img id="preview-image" class="preview-image hidden" alt="">
+          <video id="preview-video" class="preview-image hidden" muted playsinline></video>
+          <div id="preview-design" class="preview-design hidden"></div>
+          <div id="preview-ov" class="preview-ov hidden"><b id="preview-ov-title"></b><span id="preview-ov-sub"></span></div>
+        </div>
+      </div>
+      <p class="hint">Shortcuts: → next · ← prev · B black · C clear · S show</p>
+    </section>
+  </main>
+
+  <!-- Edit modal (songs + scripture) -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="modal-title">Edit</h3>
+        <button id="modal-close" class="btn ghost">✕</button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Lock screen (shown when an operator PIN is set and this device isn't authed) -->
+  <div id="lock" class="lock hidden">
+    <div class="lock-box">
+      <div class="lock-logo">◆</div>
+      <div class="lock-title">SMI Presentation is locked</div>
+      <input id="lock-pin" class="field" type="password" inputmode="numeric" placeholder="Operator PIN" autocomplete="off">
+      <button id="lock-go" class="btn primary full">Unlock</button>
+      <div id="lock-err" class="hint"></div>
+    </div>
+  </div>
+
+  <!-- Global Quick-Launch (Ctrl/⌘+K) — go live with any scripture or song from anywhere -->
+  <div id="ql" class="ql hidden">
+    <div class="ql-box">
+      <input id="ql-input" class="ql-input" type="text" autocomplete="off"
+        placeholder="Go live fast — type a reference (John 3:16) or a song / lyric…">
+      <div id="ql-results" class="ql-results"></div>
+      <div class="ql-foot">↑ ↓ choose · Enter go live · Esc close</div>
+    </div>
+  </div>
+
+  <!-- Full-screen presentation designer (built by designer.js) -->
+  <div id="designer" class="designer hidden"></div>
+
+  <script src="/static/js/design-render.js"></script>
+  <script src="/static/js/operator-core.js"></script>
+  <script src="/static/js/operator-fonts.js"></script>
+  <script src="/static/js/operator-songs.js"></script>
+  <script src="/static/js/operator-media.js"></script>
+  <script src="/static/js/operator-scripture.js"></script>
+  <script src="/static/js/operator-playlist.js"></script>
+  <script src="/static/js/operator-appearance.js"></script>
+  <script src="/static/js/operator-controls.js"></script>
+  <script src="/static/js/designer.js"></script>
+  <script src="/static/js/operator-init.js"></script>
+</body>
+</html>

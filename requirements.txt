@@ -1,0 +1,12 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+sqlmodel>=0.0.16
+httpx>=0.27          # only used by the optional online-Bible providers
+python-multipart>=0.0.9   # file uploads (media)
+pymupdf>=1.24        # render PDF pages to slide images
+pytest>=8.0          # dev: run the test suite with `pytest`
+
+# Desktop packaging (native window via desktop.py) lives in its own file —
+# see requirements-desktop.txt — since pywebview needs OS-level webview
+# libraries (GTK/WebKit on Linux, WebView2 on Windows, WebKit on macOS) that
+# a plain server-only install (`python run.py`) shouldn't have to satisfy.

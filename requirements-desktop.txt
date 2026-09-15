@@ -1,0 +1,6 @@
+# Extra dependencies for the desktop build (desktop.py) on top of requirements.txt.
+# Linux also needs system webview libraries pywebview can't install via pip —
+# see the "Building the desktop app" section in README.md.
+-r requirements.txt
+pywebview>=5.0
+pyinstaller>=6.6

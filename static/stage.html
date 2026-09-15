@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage Monitor</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link id="fonts-css" rel="stylesheet" href="/api/fonts.css">
+</head>
+<body class="stage-body">
+  <div class="st-top">
+    <div id="st-clock" class="st-clock">--:--</div>
+    <div id="st-count" class="st-count"></div>
+  </div>
+  <div class="st-main">
+    <div class="st-pane">
+      <div class="st-label">● Now</div>
+      <div id="st-now" class="st-slide"></div>
+    </div>
+    <div class="st-pane next">
+      <div class="st-label">Next →</div>
+      <div id="st-next" class="st-slide"></div>
+    </div>
+  </div>
+  <div id="st-msg" class="st-msg"></div>
+  <div id="st-status" class="live-status">connecting…</div>
+  <script src="/static/js/design-render.js"></script>
+  <script src="/static/js/stage.js"></script>
+</body>
+</html>

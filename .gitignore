@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+data.db
+.DS_Store
+media/
+.env
+.env.local
+.claude/
+
+# Desktop packaging build output
+build/
+dist/
+*.spec.bak

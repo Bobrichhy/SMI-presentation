@@ -1,0 +1,98 @@
+name: Build desktop app
+
+# Builds the pywebview-wrapped desktop app for Linux, Windows, and macOS.
+# Runs on every push/PR so a broken build is caught early; when the push is a
+# `v*` tag it also attaches the three binaries to a GitHub Release.
+#
+# Windows and macOS binaries can only be produced on their own OS (PyInstaller
+# does not cross-compile), so this always runs as a 3-way matrix across
+# GitHub's own runners rather than building everything from one machine.
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: SMI-Presentation-linux
+            sep: ":"
+          - os: windows-latest
+            artifact: SMI-Presentation-windows
+            sep: ";"
+          - os: macos-latest
+            artifact: SMI-Presentation-macos
+            sep: ":"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # pywebview's GTK backend needs these system libraries on Linux — not
+      # needed on Windows (built-in WebView2) or macOS (pyobjc via pip).
+      - name: Install GTK/WebKit (Linux only)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgirepository1.0-dev libcairo2-dev pkg-config \
+            python3-dev libgtk-3-dev gir1.2-gtk-3.0 \
+            gir1.2-webkit2-4.1 libwebkit2gtk-4.1-dev || \
+          sudo apt-get install -y gir1.2-webkit2-4.0 libwebkit2gtk-4.0-dev
+          pip install pygobject
+
+      - name: Install Python dependencies
+        run: pip install -r requirements-desktop.txt
+
+      - name: Build with PyInstaller
+        shell: bash
+        run: |
+          pyinstaller --name SMI-Presentation --onefile --windowed --noconfirm \
+            --add-data "static${{ matrix.sep }}static" \
+            --add-data "data${{ matrix.sep }}data" \
+            desktop.py
+
+      - name: Zip macOS .app bundle
+        if: runner.os == 'macOS'
+        run: |
+          cd dist
+          ditto -c -k --sequesterRsrc --keepParent SMI-Presentation.app ../${{ matrix.artifact }}.zip
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os != 'macOS'
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/SMI-Presentation*
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'macOS'
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Flatten artifacts for release
+        run: |
+          mkdir -p release
+          cp artifacts/SMI-Presentation-linux/SMI-Presentation release/SMI-Presentation-linux
+          cp artifacts/SMI-Presentation-windows/SMI-Presentation.exe release/SMI-Presentation-windows.exe
+          cp artifacts/SMI-Presentation-macos/SMI-Presentation-macos.zip release/SMI-Presentation-macos.zip
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
